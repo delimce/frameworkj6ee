@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<zk xmlns="http://www.zkoss.org/2005/zul">
-    <window>
+    <window title="titulo" width="600px" height="620px" border="normal"
+        apply="com.siclhos.controller.ExampleController">
 	Bienvenido a SICLHOS 
     </window>
-</zk>

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package com.siclhos.lib;
+package com.siclhos.lib.utils;
 
 import java.rmi.server.UID;
 
