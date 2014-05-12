@@ -22,9 +22,7 @@ public class HelperDAO extends Database {
         this.connect();
         
     }
-
-      
-    
+ 
     public String getEntityTable() {
         return EntityTable;
     }

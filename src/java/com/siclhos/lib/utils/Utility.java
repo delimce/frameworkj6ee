@@ -9,7 +9,7 @@ package com.siclhos.lib.utils;
 import java.rmi.server.UID;
 
 /**
- * clase de utilidades para ser llamada de forma estatica
+ * clase de utilidades para ser llamada de forma estatica (libreria)
  * @author luis de lima
  */
 public class Utility {
