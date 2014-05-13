@@ -16,8 +16,8 @@ import java.util.logging.Logger;
  */
 public class BaremosDML extends HelperDAO {
 
-    public BaremosDML(String poolName) {
-        super(poolName);
+    public BaremosDML() {
+        super();
     }
 
     

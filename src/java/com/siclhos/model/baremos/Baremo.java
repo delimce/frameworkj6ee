@@ -3,22 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.siclhos.model.baremos;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -28,8 +26,11 @@ import javax.validation.constraints.Size;
  *
  * @author luis
  */
+@Entity
+@Table(name = "CL_TIPO_BARE")
 public class Baremo {
-     private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @NotNull
@@ -82,15 +83,21 @@ public class Baremo {
     @Column(name = "REL_CONSUMO_DETALLA_COMP")
     private String relConsumoDetallaComp;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tipoBaremo")
-    
-    private Area area;
-    /*******mis atributos****/
-    private BaremosDML objetoDatos;
-    private final String POOL = "SiclhosDS";
 
-    /********metodos******/
-    
+    private Area area;
+    /**
+     * *****mis atributos***
+     */
+    private BaremosDML objetoDatos;
+
+    private String table;
+
+    /**
+     * ******metodos*****
+     */
+
     public Baremo() {
+        this.table = "CL_TIPO_BARE";
     }
 
     public Baremo(String tipoBaremo) {
@@ -233,55 +240,44 @@ public class Baremo {
         this.relConsumoDetallaComp = relConsumoDetallaComp;
     }
 
-   
-
     public Area getArea() {
         return area;
     }
 
     public void setArea(Area area) {
         this.area = area;
-    } 
-    
-    
+    }
 
-    
-    
-    /***************metodos propios****************/
-    
-    
-    public ArrayList<Baremo> getListaBaremo(String pTipobaremo){
-        
-        objetoDatos = new BaremosDML(POOL);  
+    /**
+     * *************metodos propios***************
+     */
+    public ArrayList<Baremo> getListaBaremo(String pTipobaremo) {
+
+        objetoDatos = new BaremosDML();
         this.objetoDatos.consultaBaremo(pTipobaremo);
-       
+
         ArrayList vectorBaremos = new ArrayList<>();
-        
-        if(this.objetoDatos.getNreg()>0){
-            
+
+        if (this.objetoDatos.getNreg() > 0) {
+
             try {
-                while(objetoDatos.getResult().next()){
-                    
+                while (objetoDatos.getResult().next()) {
+
                     Baremo b = new Baremo();
                     b.setTipoBaremo(objetoDatos.getString("tipo_baremo"));
                     b.setDescripcion(objetoDatos.getString("desc_tipo_baremo"));
                     b.setManejoInv(objetoDatos.getString("manejo_inv"));
-                    b.setOrdenBaremo((short)objetoDatos.getInteger("orden_baremo"));
+                    b.setOrdenBaremo((short) objetoDatos.getInteger("orden_baremo"));
                     vectorBaremos.add(b);
                 }
             } catch (SQLException ex) {
                 Logger.getLogger(Baremo.class.getName()).log(Level.SEVERE, null, ex);
             }
-            
+
         }
-        
+
         return vectorBaremos;
-        
+
     }
-    
-    
-    
-    
-    
-    
+
 }

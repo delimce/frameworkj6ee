@@ -6,12 +6,11 @@
 
 package com.siclhos.model.baremos;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -19,6 +18,8 @@ import javax.validation.constraints.Size;
  *
  * @author luis
  */
+@Entity
+@Table(name = "CL_AREA")
 public class Area {
     
      private static final long serialVersionUID = 1L;
@@ -38,8 +39,11 @@ public class Area {
     @Column(name = "CODIGO_CONTABLE")
     private String codigoContable;
 
+    private BaremosDML objetoDatos;
+    private String table;
 
      public Area() {
+         this.table = "CL_AREA";
     }
 
     public Area(String area) {
