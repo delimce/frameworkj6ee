@@ -20,16 +20,23 @@ public class BaremosDML extends HelperDAO {
         super();
     }
 
+    /**
+     * constructor del objeto paasndo la tabla (entidad a la que hace referencia)
+     * @param tabla
+     */
+     public BaremosDML(String tabla) {
+        super(tabla);
+    }
     
     /**
      * Consulta de un area especifica dado su codigo
-     *
      * @param area
      */
     public void consultaArea(String area) {
 
         try {
-            prepareSQL("select * from cl_area where area = '" + area + "'");
+            prepareSQL("select * from cl_area where area = ? ");
+            setString(1, area);
             query();
 
         } catch (SQLException ex) {
@@ -46,7 +53,8 @@ public class BaremosDML extends HelperDAO {
      public void consultaBaremo(String tipoBaremo) {
 
         try {
-            prepareSQL("select * from cl_baremo_vn where tipo_baremo = '" + tipoBaremo + "'");
+            prepareSQL("select * from cl_baremo_vn where tipo_baremo = ? ");
+            setString(1, tipoBaremo);
             query();
 
         } catch (SQLException ex) {

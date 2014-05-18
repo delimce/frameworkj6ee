@@ -84,7 +84,7 @@ public class Baremo {
     private String relConsumoDetallaComp;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "tipoBaremo")
 
-    private Area area;
+    private ClArea area;
     /**
      * *****mis atributos***
      */
@@ -95,13 +95,8 @@ public class Baremo {
     /**
      * ******metodos*****
      */
-
     public Baremo() {
         this.table = "CL_TIPO_BARE";
-    }
-
-    public Baremo(String tipoBaremo) {
-        this.tipoBaremo = tipoBaremo;
     }
 
     public String getTipoBaremo() {
@@ -240,11 +235,11 @@ public class Baremo {
         this.relConsumoDetallaComp = relConsumoDetallaComp;
     }
 
-    public Area getArea() {
+    public ClArea getArea() {
         return area;
     }
 
-    public void setArea(Area area) {
+    public void setArea(ClArea area) {
         this.area = area;
     }
 

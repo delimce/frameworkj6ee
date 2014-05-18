@@ -7,7 +7,6 @@ package com.siclhos.lib.database;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import static java.util.Arrays.asList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,12 +19,25 @@ public class HelperDAO extends Database {
 
     private static final String POOL = "SiclhosDS";
     protected String EntityTable; ///atributo de tabla fisica a la entidad
+    protected String procedureName; ////nombre del procedimiento (puede contener el pkg)
+    protected String functionName; ////nombre de la funcion (puede contener el pkg)
     protected List<String> columns; ////conjunto de campos para operaciones crud
     protected List<String> columnsWhere; ///columnas para clausulas where
     protected List<Object> values; ////conjunto de valores de los campos
     protected List<Object> valuesWhere; ////conjunto de valores de los campos where
-    
-    
+
+    public enum typeParam { ///tipo de parametro (IN: entrada, OUT: salida
+
+        IN, OUT
+    }
+
+    public static enum sqlType {
+
+        STRING, INTEGER, BIGINT, FLOAT, DOUBLE, DECIMAL
+    };
+
+    private List<Parameter> parameters; //////lista de parametros para llamar los stored
+
     public HelperDAO() {
 
         this.getPool(POOL);
@@ -33,8 +45,39 @@ public class HelperDAO extends Database {
 
     }
 
-   public String getEntityTable() {
+    
+   /**
+    * constructor con el nombre de la tabla
+    * @param table 
+    */
+    public HelperDAO(String table) {
+        this.setEntityTable(table);
+        this.getPool(POOL);
+        this.connect();
+    }
+
+    
+    
+    public String getEntityTable() {
         return EntityTable;
+    }
+
+    public String getProcedureName() {
+        return procedureName;
+    }
+
+    public void setProcedureName(String procedureName) {
+        this.procedureName = procedureName;
+        this.parameters = new ArrayList<>();
+    }
+
+    public String getFunctionName() {
+        return functionName;
+    }
+
+    public void setFunctionName(String functionName) {
+        this.functionName = functionName;
+        this.parameters = new ArrayList<>();
     }
 
     /**
@@ -66,7 +109,7 @@ public class HelperDAO extends Database {
      * @param Array The Array to be converted to String
      * @return String
      */
-    public String Join(String glue, List Array) {
+    private String Join(String glue, List Array) {
         String res = "";
         int i = 0;
         for (i = 0; i < Array.size() - 1; i++) {
@@ -85,7 +128,7 @@ public class HelperDAO extends Database {
      * @return String Repeat(", ", "?", 3) = "?, ?" Repeat(", ", "Repeat", 3) =
      * "Repeat, Repeat, Repeat"
      */
-    public String Repeat(String glue, String repeat, Integer count) {
+    private String Repeat(String glue, String repeat, Integer count) {
         String res = "";
         int i = 0;
         for (i = 0; i < count - 1; i++) {
@@ -119,11 +162,12 @@ public class HelperDAO extends Database {
 
     /**
      * hace el seting de la posicion del campo y el tipo de objeto a enviar
+     * usado para operaciones CRUD
      *
      * @param obj
      * @param pos
      */
-    protected void getObject(Object obj, int pos) {
+    private void setObject(Object obj, int pos) {
 
         if (obj.getClass().equals(String.class)) {
             System.out.println("string");
@@ -142,22 +186,84 @@ public class HelperDAO extends Database {
         }
     }
 
+    /**
+     * para setiar parametros de entrada de sp o funcion
+     *
+     * @param obj
+     * @param pos
+     */
+    private void setObjectParamIn(Object obj, int pos) {
+
+        if (obj.getClass().equals(String.class)) {
+            System.out.println("parametro entrada string");
+            this.setStringInParam(pos, (String) obj);
+        } else if (obj.getClass().equals(Integer.class)) {
+            System.out.println("parametro entrada int");
+            this.setIntegerInParam(pos, (Integer) obj);
+        } else if (obj.getClass().equals(Short.class)) {
+            System.out.println("parametro entrada short");
+            this.setIntegerInParam(pos, (Integer) obj);
+        } else if (obj.getClass().equals(Float.class)) {
+            System.out.println("parametro entrada float");
+            this.setFloatInParam(pos, (Float) obj);
+        } else if (obj.getClass().equals(Double.class)) {
+            System.out.println("parametro entrada double");
+            this.setDobleInParam(pos, (Double) obj);
+        }
+    }
+
+    private void setObjectParamOut(sqlType type, int pos) {
+
+        if (type == sqlType.STRING) {
+            System.out.println("parametro salida string");
+            this.setStringOutParam(pos);
+        } else if (type == sqlType.INTEGER) {
+            System.out.println("parametro salida int");
+            this.setIntegerOutParam(pos);
+        } else if (type == sqlType.FLOAT) {
+            System.out.println("parametro salida float");
+            this.setFloatOutParam(pos);
+        } else if (type == sqlType.DOUBLE) {
+            System.out.println("parametro salida double");
+            this.setDobleOutParam(pos);
+        }
+    }
+
+    /**
+     * hace el seting del paso de parametros al sp o la funcion
+     *
+     * @param p
+     */
+    private void setObject(Parameter p) {
+        if (p.getType() == typeParam.IN) { //parametro de entrada
+            this.setObjectParamIn(p.getValue(), p.getPosition());
+
+        } else {
+            this.setObjectParamOut(p.getTypeSql(), p.getPosition());
+
+        }
+
+    }
+
     /////metodos para CRUD
     public void dataInsert() {
 
         try {
             String tablename = this.getEntityTable();
-            String sql = "insert into " + tablename + " (" + Join(", ", columns) + ") values (" + Repeat(", ", "?", columns.size()) + ")";
+
+            StringBuilder sql = new StringBuilder("insert into ").append(tablename).append(tablename).append(" (").append(Join(", ", columns)).append(") values (").append(Repeat(", ", "?", columns.size())).append(")");
             System.out.println(sql);
-            prepareTSQL(sql);
+            prepareTSQL(sql.toString());
 
             for (int i = 0; i < columns.size(); i++) {
-                getObject(values.get(i), i + 1);
+                setObject(values.get(i), i + 1);
             }
 
             tquery();
         } catch (SQLException ex) {
             Logger.getLogger(HelperDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            closePrepare();
         }
 
     }
@@ -170,19 +276,21 @@ public class HelperDAO extends Database {
             }
 
             String tablename = this.getEntityTable();
-            String sql = "delete from " + tablename + " where ";
+            StringBuilder sql = new StringBuilder("delete from ").append(tablename).append(" where ");
             int i;
             for (i = 0; i < columnsWhere.size() - 1; i++) {
-                sql = sql + columnsWhere.get(i) + "=? and "; ///todo: hacer que agrupe por and/or
+                sql.append(columnsWhere.get(i)).append("=? and "); ///todo: hacer que agrupe por and/or
             }
-            sql = sql + columnsWhere.get(i) + "=?";
-            prepareTSQL(sql);
+            sql.append(columnsWhere.get(i)).append("=?");
+            prepareTSQL(sql.toString());
             for (i = 0; i < columnsWhere.size(); i++) {
-                getObject(valuesWhere.get(i), i + 1);
+                setObject(valuesWhere.get(i), i + 1);
             }
             tquery();
         } catch (SQLException ex) {
             Logger.getLogger(HelperDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            closePrepare();
         }
 
     }
@@ -195,28 +303,184 @@ public class HelperDAO extends Database {
                 return;
             }
             String tablename = this.getEntityTable();
-            String sql = "update " + tablename + " set ";
+            StringBuilder sql = new StringBuilder("update ").append(tablename).append(" set ");
             int i;
             for (i = 0; i < columns.size() - 1; i++) {
-                sql += columns.get(i) + "=?,";
+                sql.append(columns.get(i)).append("=?,");
             }
-            sql += columns.get(i) + "=? where ";
+            sql.append(columns.get(i)).append("=? where ");
             for (i = 0; i < columnsWhere.size() - 1; i++) {
-                sql += columnsWhere.get(i) + "=? and "; ///todo: hacer que agrupe por and/or
+                sql.append(columnsWhere.get(i)).append("=? and "); ///todo: hacer que agrupe por and/or
             }
-            sql += columnsWhere.get(i) + "=?";
+            sql.append(columnsWhere.get(i)).append("=?");
 
             System.out.println(sql);
-            prepareTSQL(sql);
-            /////mexclando vectores de valores para pasar los parametros
-            List<List<Object>> mexcla = asList(this.values, this.valuesWhere);
+            prepareTSQL(sql.toString());
+            /////mexclando vectores de valores para pasar los parametros      
+            List mexcla = new ArrayList(this.values);
+            mexcla.addAll(this.valuesWhere);
+
             for (i = 0; i < mexcla.size(); i++) {
                 System.out.println(mexcla.get(i));
-                getObject(mexcla.get(i), i + 1);
+                setObject(mexcla.get(i), i + 1);
             }
             tquery();
         } catch (SQLException ex) {
             Logger.getLogger(HelperDAO.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            closePrepare();
+        }
+
+    }
+
+    /**
+     * ejecucion de un storedProcedure (debe setiarse el nombre previamente y
+     * colocar los parametros de entrada y salida correspondientes
+     */
+    public void executeProcedure() {
+
+        StringBuilder sql = new StringBuilder("{call ").append(this.getProcedureName()).append("(").append(Repeat(", ", "?", this.parameters.size())).append(")}");
+        // String sql = "{call " + this.getProcedureName() + "(" + Repeat(", ", "?", this.parameters.size()) + ")}";
+        this.prepareCall(sql.toString());
+        for (Parameter parameter : parameters) {
+            setObject(parameter);
+        }
+        this.executeCall();
+
+    }
+
+    /**
+     * ejecuta una funcion con los parametros por defecto el parametro de salida
+     * siempre debe ser declarado en primer lugar con el metodo del tipo que
+     * corresponda, luego vendran los para metros de entrada
+     */
+    public void executeFunction() {
+        StringBuilder sql = new StringBuilder("{? = call ").append(this.getFunctionName()).append("(").append(Repeat(", ", "?", this.parameters.size() - 1)).append(")}");
+        this.prepareCall(sql.toString());
+        for (Parameter parameter : parameters) {
+            setObject(parameter);
+        }
+        this.executeCall();
+
+    }
+
+    /**
+     * metodo que setea un parametro de ENTRADA para un sp o funcion la llamada
+     * de este metodo despues del setProcedureName determina la posicion de los
+     * parametros, se asigna el valor del parametro debe ser de tipo Objeto
+     *
+     * @param value
+     */
+    public void setInParameter(Object value) {
+        int pos = this.parameters.size() + 1;
+        Parameter p = new Parameter();
+        p.setPosition(pos);
+        p.setType(typeParam.IN);
+        p.setValue(value);
+
+        this.parameters.add(p);///agregando a la lista de parametros para ejecutar el SP o funcion
+
+    }
+
+    /**
+     * metodo que setea un parametro de ENTRADA para un sp o funcion la llamada
+     * necesita la posicion del parametro en el sp o funcion y el valor
+     *
+     * @param pos
+     * @param value
+     */
+    public void setInParameter(int pos, Object value) {
+        Parameter p = new Parameter();
+        p.setPosition(pos);
+        p.setType(typeParam.IN);
+        p.setValue(value);
+
+        this.parameters.add(p);///agregando a la lista de parametros para ejecutar el SP o funcion
+
+    }
+
+    /**
+     * metodo que setea un parametro de SALIDA para un sp o funcion la llamada
+     * de este metodo despues del setProcedureName determina la posicion de los
+     * parametros, se asigna el tipo de valor (java.sql.types)
+     *
+     * @param t
+     */
+    private void setOutParameter(sqlType t) {
+        int pos = this.parameters.size() + 1;
+        Parameter p = new Parameter();
+        p.setPosition(pos);
+        p.setType(typeParam.OUT);
+        p.setTypeSql(t);
+        this.parameters.add(p);///agregando a la lista de parametros para ejecutar el SP o funcion
+
+    }
+
+    public void setOutString() {
+        setOutParameter(sqlType.STRING);
+    }
+
+    public void setOutInteger() {
+
+        setOutParameter(sqlType.INTEGER);
+    }
+
+    public void setOutFloat() {
+
+        setOutParameter(sqlType.FLOAT);
+    }
+
+    public void setOutDouble() {
+        setOutParameter(sqlType.DOUBLE);
+    }
+
+    /////clase interna para el uso de parametros (procedimientos y funciones) 
+    private class Parameter {
+
+        private String name; ///parametro nombre
+        private int position; ///posicion
+        private typeParam type; ////tipo de parametro
+        private Object value; ////valor
+        private sqlType typeSql; ////tipos de parametros de salida (java.sql.Types)
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getPosition() {
+            return position;
+        }
+
+        public void setPosition(int position) {
+            this.position = position;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public void setValue(Object value) {
+            this.value = value;
+        }
+
+        public typeParam getType() {
+            return type;
+        }
+
+        public void setType(typeParam type) {
+            this.type = type;
+        }
+
+        public sqlType getTypeSql() {
+            return typeSql;
+        }
+
+        public void setTypeSql(sqlType typeSql) {
+            this.typeSql = typeSql;
         }
 
     }
