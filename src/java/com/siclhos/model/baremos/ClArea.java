@@ -142,6 +142,7 @@ public class ClArea {
      */
     public String execr_prueba_ejecuta_prc(String input) {
 
+        String salida = "";
         try {
             objetoDatos = new BaremosDML();
             objetoDatos.setProcedureName("r_prueba_bulk.r_prueba_ejecuta_prc");
@@ -150,6 +151,8 @@ public class ClArea {
             objetoDatos.setInParameter(3);  //parametro de entrada 3
             objetoDatos.setOutString();  //parametro de salida 1
             objetoDatos.executeProcedure(); ///ejecucion
+            
+            salida = objetoDatos.getString(4);
 
         } catch (SQLException ex) {
             Logger.getLogger(ClArea.class.getName()).log(Level.SEVERE, null, ex);
@@ -157,7 +160,7 @@ public class ClArea {
             objetoDatos.close(); /////muy importante (libera la conexion y la entrega al pool)
         }
 
-        return objetoDatos.getString(4);
+        return salida;
     }
 
 }

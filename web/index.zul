@@ -1,4 +1,4 @@
-    <window title="titulo" width="600px" height="620px" border="normal"
+    <window title="titulo"  width="600px" height="620px" border="normal"
             apply="com.siclhos.controller.ExampleController">
     Bienvenido a SICLHOS 
     <div>
