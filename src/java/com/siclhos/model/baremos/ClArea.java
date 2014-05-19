@@ -162,5 +162,26 @@ public class ClArea {
 
         return salida;
     }
+   
+     public String BuscaTexto(String input) {
+         String salida = "";
+        try {
+            objetoDatos = new BaremosDML();
+            objetoDatos.setFunctionName("R_PRUEBA_BULK.busca_texto");
+            objetoDatos.setOutString();
+            objetoDatos.setInParameter("aaa"); //parametro de entrada 1
+            objetoDatos.setInParameter("2");  //parametro de entrada 2
+            objetoDatos.setInParameter(3);  //parametro de entrada 3            
+            objetoDatos.executeFunction();
+            
+            salida = objetoDatos.getString(1);
 
+        } catch (SQLException ex) {
+            Logger.getLogger(ClArea.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            objetoDatos.close(); /////muy importante (libera la conexion y la entrega al pool)
+        }
+
+        return salida;
+     } 
 }
