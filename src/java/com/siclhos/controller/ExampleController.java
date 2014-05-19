@@ -20,7 +20,15 @@ public class ExampleController extends SelectorComposer<Component> {
         ClArea area = new ClArea();
         output.setValue(area.execr_prueba_ejecuta_prc(input.getValue()));
 
-        //      output.setValue(input.getValue());
+        ////eliminar
+        // area.borrarArea("PU");
+        //modificar 
+        // area.setDescripcion(input.getValue());
+        //area.modificarArea("pu");
+        //insertar
+//        area.setArea("P2");
+//        area.setDescripcion(input.getValue());
+//        area.insertarArea();
     }
 
     @Listen("onClick=#cancel")
@@ -28,12 +36,10 @@ public class ExampleController extends SelectorComposer<Component> {
         output.setValue("");
     }
 
-    
-     @Listen("onClick=#input")
+    @Listen("onClick=#input")
     public void cancel2() {
-       cancel();
-       input.setText("");
+        cancel();
+        input.setText("");
     }
-    
-    
+
 }

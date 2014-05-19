@@ -45,19 +45,17 @@ public class HelperDAO extends Database {
 
     }
 
-    
-   /**
-    * constructor con el nombre de la tabla
-    * @param table 
-    */
+    /**
+     * constructor con el nombre de la tabla
+     *
+     * @param table
+     */
     public HelperDAO(String table) {
         this.setEntityTable(table);
         this.getPool(POOL);
         this.connect();
     }
 
-    
-    
     public String getEntityTable() {
         return EntityTable;
     }
@@ -169,21 +167,26 @@ public class HelperDAO extends Database {
      */
     private void setObject(Object obj, int pos) {
 
-        if (obj.getClass().equals(String.class)) {
-            System.out.println("string");
-            this.setString(pos, (String) obj);
-        } else if (obj.getClass().equals(Integer.class)) {
-            System.out.println("int");
-            this.setInteger(pos, (Integer) obj);
-        } else if (obj.getClass().equals(Short.class)) {
-            System.out.println("short");
-            this.setInteger(pos, (Integer) obj);
-        } else if (obj.getClass().equals(Float.class)) {
-            this.setFloat(pos, (Float) obj);
-        } else if (obj.getClass().equals(Double.class)) {
-            System.out.println("double");
-            this.setDoble(pos, (Double) obj);
+        try { ///si recibe un tipo que no esta definido    
+
+            if (obj.getClass().equals(String.class)) {
+                System.out.println("string");
+                this.setString(pos, (String) obj);
+            } else if (obj.getClass().equals(Integer.class)) {
+                System.out.println("int");
+                this.setInteger(pos, (Integer) obj);
+            } else if (obj.getClass().equals(Short.class)) {
+                System.out.println("short");
+                this.setInteger(pos, (Integer) obj);
+            } else if (obj.getClass().equals(Float.class)) {
+                this.setFloat(pos, (Float) obj);
+            } else if (obj.getClass().equals(Double.class)) {
+                System.out.println("double");
+                this.setDoble(pos, (Double) obj);
+            }
+        } catch (NullPointerException e) {
         }
+
     }
 
     /**
@@ -194,39 +197,51 @@ public class HelperDAO extends Database {
      */
     private void setObjectParamIn(Object obj, int pos) {
 
-        if (obj.getClass().equals(String.class)) {
-            System.out.println("parametro entrada string");
-            this.setStringInParam(pos, (String) obj);
-        } else if (obj.getClass().equals(Integer.class)) {
-            System.out.println("parametro entrada int");
-            this.setIntegerInParam(pos, (Integer) obj);
-        } else if (obj.getClass().equals(Short.class)) {
-            System.out.println("parametro entrada short");
-            this.setIntegerInParam(pos, (Integer) obj);
-        } else if (obj.getClass().equals(Float.class)) {
-            System.out.println("parametro entrada float");
-            this.setFloatInParam(pos, (Float) obj);
-        } else if (obj.getClass().equals(Double.class)) {
-            System.out.println("parametro entrada double");
-            this.setDobleInParam(pos, (Double) obj);
+        try { ///si recibe un tipo que no esta definido      
+
+            if (obj.getClass().equals(String.class)) {
+                System.out.println("parametro entrada string");
+                this.setStringInParam(pos, (String) obj);
+            } else if (obj.getClass().equals(Integer.class)) {
+                System.out.println("parametro entrada int");
+                this.setIntegerInParam(pos, (Integer) obj);
+            } else if (obj.getClass().equals(Short.class)) {
+                System.out.println("parametro entrada short");
+                this.setIntegerInParam(pos, (Integer) obj);
+            } else if (obj.getClass().equals(Float.class)) {
+                System.out.println("parametro entrada float");
+                this.setFloatInParam(pos, (Float) obj);
+            } else if (obj.getClass().equals(Double.class)) {
+                System.out.println("parametro entrada double");
+                this.setDobleInParam(pos, (Double) obj);
+            }
+
+        } catch (NullPointerException e) {
         }
+
     }
 
     private void setObjectParamOut(sqlType type, int pos) {
 
-        if (type == sqlType.STRING) {
-            System.out.println("parametro salida string");
-            this.setStringOutParam(pos);
-        } else if (type == sqlType.INTEGER) {
-            System.out.println("parametro salida int");
-            this.setIntegerOutParam(pos);
-        } else if (type == sqlType.FLOAT) {
-            System.out.println("parametro salida float");
-            this.setFloatOutParam(pos);
-        } else if (type == sqlType.DOUBLE) {
-            System.out.println("parametro salida double");
-            this.setDobleOutParam(pos);
+        try {
+
+            if (type == sqlType.STRING) {
+                System.out.println("parametro salida string");
+                this.setStringOutParam(pos);
+            } else if (type == sqlType.INTEGER) {
+                System.out.println("parametro salida int");
+                this.setIntegerOutParam(pos);
+            } else if (type == sqlType.FLOAT) {
+                System.out.println("parametro salida float");
+                this.setFloatOutParam(pos);
+            } else if (type == sqlType.DOUBLE) {
+                System.out.println("parametro salida double");
+                this.setDobleOutParam(pos);
+            }
+
+        } catch (NullPointerException e) {
         }
+
     }
 
     /**
@@ -246,90 +261,76 @@ public class HelperDAO extends Database {
     }
 
     /////metodos para CRUD
-    public void dataInsert() {
+    public void dataInsert() throws SQLException {
 
-        try {
-            String tablename = this.getEntityTable();
+        String tablename = this.getEntityTable();
 
-            StringBuilder sql = new StringBuilder("insert into ").append(tablename).append(tablename).append(" (").append(Join(", ", columns)).append(") values (").append(Repeat(", ", "?", columns.size())).append(")");
-            System.out.println(sql);
-            prepareTSQL(sql.toString());
+        StringBuilder sql = new StringBuilder("insert into ").append(tablename).append(" (").append(Join(", ", columns)).append(") values (").append(Repeat(", ", "?", columns.size())).append(")");
+        System.out.println(sql);
+        prepareTSQL(sql.toString());
 
-            for (int i = 0; i < columns.size(); i++) {
-                setObject(values.get(i), i + 1);
-            }
-
-            tquery();
-        } catch (SQLException ex) {
-            Logger.getLogger(HelperDAO.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            closePrepare();
+        for (int i = 0; i < columns.size(); i++) {
+            setObject(values.get(i), i + 1);
         }
+
+        tquery();
+        closePrepare();
 
     }
 
-    public void delete() {
-        try {
-            if (columnsWhere.size() < 1) { ///debe haber un criterio al menos
-                System.out.println("IMPOSIBLE APLICAR OPERACION SIN UN CRITERIO");
-                return;
-            }
+    public void delete() throws SQLException {
 
-            String tablename = this.getEntityTable();
-            StringBuilder sql = new StringBuilder("delete from ").append(tablename).append(" where ");
-            int i;
-            for (i = 0; i < columnsWhere.size() - 1; i++) {
-                sql.append(columnsWhere.get(i)).append("=? and "); ///todo: hacer que agrupe por and/or
-            }
-            sql.append(columnsWhere.get(i)).append("=?");
-            prepareTSQL(sql.toString());
-            for (i = 0; i < columnsWhere.size(); i++) {
-                setObject(valuesWhere.get(i), i + 1);
-            }
-            tquery();
-        } catch (SQLException ex) {
-            Logger.getLogger(HelperDAO.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            closePrepare();
+        if (columnsWhere.size() < 1) { ///debe haber un criterio al menos
+            System.out.println("IMPOSIBLE APLICAR OPERACION SIN UN CRITERIO");
+            return;
         }
+
+        String tablename = this.getEntityTable();
+        StringBuilder sql = new StringBuilder("delete from ").append(tablename).append(" where ");
+        int i;
+        for (i = 0; i < columnsWhere.size() - 1; i++) {
+            sql.append(columnsWhere.get(i)).append("=? and "); ///todo: hacer que agrupe por and/or
+        }
+        sql.append(columnsWhere.get(i)).append("=?");
+        prepareTSQL(sql.toString());
+        for (i = 0; i < columnsWhere.size(); i++) {
+            setObject(valuesWhere.get(i), i + 1);
+        }
+        tquerySimple();
+        closePrepare();
 
     }
 
-    public void update() {
+    public void update() throws SQLException {
 
-        try {
-            if (columnsWhere.size() < 1) { ///debe haber un criterio al menos
-                System.out.println("IMPOSIBLE APLICAR OPERACION SIN UN CRITERIO");
-                return;
-            }
-            String tablename = this.getEntityTable();
-            StringBuilder sql = new StringBuilder("update ").append(tablename).append(" set ");
-            int i;
-            for (i = 0; i < columns.size() - 1; i++) {
-                sql.append(columns.get(i)).append("=?,");
-            }
-            sql.append(columns.get(i)).append("=? where ");
-            for (i = 0; i < columnsWhere.size() - 1; i++) {
-                sql.append(columnsWhere.get(i)).append("=? and "); ///todo: hacer que agrupe por and/or
-            }
-            sql.append(columnsWhere.get(i)).append("=?");
-
-            System.out.println(sql);
-            prepareTSQL(sql.toString());
-            /////mexclando vectores de valores para pasar los parametros      
-            List mexcla = new ArrayList(this.values);
-            mexcla.addAll(this.valuesWhere);
-
-            for (i = 0; i < mexcla.size(); i++) {
-                System.out.println(mexcla.get(i));
-                setObject(mexcla.get(i), i + 1);
-            }
-            tquery();
-        } catch (SQLException ex) {
-            Logger.getLogger(HelperDAO.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            closePrepare();
+        if (columnsWhere.size() < 1) { ///debe haber un criterio al menos
+            System.out.println("IMPOSIBLE APLICAR OPERACION SIN UN CRITERIO");
+            return;
         }
+        String tablename = this.getEntityTable();
+        StringBuilder sql = new StringBuilder("update ").append(tablename).append(" set ");
+        int i;
+        for (i = 0; i < columns.size() - 1; i++) {
+            sql.append(columns.get(i)).append("=?,");
+        }
+        sql.append(columns.get(i)).append("=? where ");
+        for (i = 0; i < columnsWhere.size() - 1; i++) {
+            sql.append(columnsWhere.get(i)).append("=? and "); ///todo: hacer que agrupe por and/or
+        }
+        sql.append(columnsWhere.get(i)).append("=?");
+
+        System.out.println(sql);
+        prepareTSQL(sql.toString());
+        /////mexclando vectores de valores para pasar los parametros      
+        List mexcla = new ArrayList(this.values);
+        mexcla.addAll(this.valuesWhere);
+
+        for (i = 0; i < mexcla.size(); i++) {
+            System.out.println(mexcla.get(i));
+            setObject(mexcla.get(i), i + 1);
+        }
+        tquerySimple();
+        closePrepare();
 
     }
 
@@ -337,7 +338,7 @@ public class HelperDAO extends Database {
      * ejecucion de un storedProcedure (debe setiarse el nombre previamente y
      * colocar los parametros de entrada y salida correspondientes
      */
-    public void executeProcedure() {
+    public void executeProcedure() throws SQLException {
 
         StringBuilder sql = new StringBuilder("{call ").append(this.getProcedureName()).append("(").append(Repeat(", ", "?", this.parameters.size())).append(")}");
         // String sql = "{call " + this.getProcedureName() + "(" + Repeat(", ", "?", this.parameters.size()) + ")}";
@@ -354,7 +355,7 @@ public class HelperDAO extends Database {
      * siempre debe ser declarado en primer lugar con el metodo del tipo que
      * corresponda, luego vendran los para metros de entrada
      */
-    public void executeFunction() {
+    public void executeFunction() throws SQLException {
         StringBuilder sql = new StringBuilder("{? = call ").append(this.getFunctionName()).append("(").append(Repeat(", ", "?", this.parameters.size() - 1)).append(")}");
         this.prepareCall(sql.toString());
         for (Parameter parameter : parameters) {

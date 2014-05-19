@@ -41,7 +41,7 @@ public class ClArea {
     @Column(name = "CODIGO_CONTABLE")
     private String codigoContable;
 
-    /////atributos propios
+    /////atributos propios (colocar estsos dos en cada clase de entidad)
     private BaremosDML objetoDatos; ///objeto de utility para base de datos
     private String table = (String) this.getClass().getAnnotation(Table.class).name(); ///tabla en bd
 
@@ -88,47 +88,75 @@ public class ClArea {
 
     public void insertarArea() {
 
-        objetoDatos = new BaremosDML(table); ///asigna directamente la tabla
-        // objetoDatos.setEntityTable(table);
-        objetoDatos.setColumn("AREA", this.getArea());
-        objetoDatos.setColumn("DESCRIPCION", this.getDescripcion());
-        objetoDatos.setColumn("TIPO_AGRUPA", this.getTipoAgrupa());
-        objetoDatos.dataInsert();
+        try {
+            objetoDatos = new BaremosDML(table); ///asigna directamente la tabla
+            // objetoDatos.setEntityTable(table);
+            objetoDatos.setColumn("AREA", this.getArea());
+            objetoDatos.setColumn("DESCRIPCION", this.getDescripcion());
+            objetoDatos.dataInsert();
+        } catch (SQLException ex) {
+            Logger.getLogger(ClArea.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            objetoDatos.close(); /////muy importante (libera la conexion y la entrega al pool)
+        }
 
     }
 
     public void borrarArea(String area) {
 
-        objetoDatos = new BaremosDML();
-        objetoDatos.setEntityTable(table);
-        objetoDatos.setColumnWhere("AREA", area);
-        objetoDatos.delete();
+        try {
+            objetoDatos = new BaremosDML();
+            objetoDatos.setEntityTable(table);
+            objetoDatos.setColumnWhere("AREA", area);
+            objetoDatos.delete();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ClArea.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            objetoDatos.close(); /////muy importante (libera la conexion y la entrega al pool)
+        }
 
     }
 
     public void modificarArea(String area) {
 
-        objetoDatos = new BaremosDML(table);
-        objetoDatos.setColumn("DESCRIPCION", this.getDescripcion());
-        objetoDatos.setColumn("TIPO_AGRUPA", this.getTipoAgrupa());
-        //////where
-        objetoDatos.setColumnWhere("AREA", area);
-        objetoDatos.update();
+        try {
+            objetoDatos = new BaremosDML(table);
+            objetoDatos.setColumn("DESCRIPCION", this.getDescripcion());
+            // objetoDatos.setColumn("TIPO_AGRUPA", this.getTipoAgrupa());
+            //////where
+            objetoDatos.setColumnWhere("AREA", area);
+            objetoDatos.update();
+        } catch (SQLException ex) {
+            Logger.getLogger(ClArea.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            objetoDatos.close(); /////muy importante (libera la conexion y la entrega al pool)
+        }
 
     }
 
+    /**
+     * ejemplo de ejecucion de 1 procedure
+     * @param input
+     * @return 
+     */
     public String execr_prueba_ejecuta_prc(String input) {
 
-        objetoDatos = new BaremosDML();
-        objetoDatos.setProcedureName("r_prueba_bulk.r_prueba_ejecuta_prc");
-        objetoDatos.setInParameter(input);
-        objetoDatos.setInParameter("2");
-        objetoDatos.setInParameter(3);
-        objetoDatos.setOutString();
-        objetoDatos.executeProcedure();
+        try {
+            objetoDatos = new BaremosDML();
+            objetoDatos.setProcedureName("r_prueba_bulk.r_prueba_ejecuta_prc");
+            objetoDatos.setInParameter(input); //parametro de entrada 1
+            objetoDatos.setInParameter("2");  //parametro de entrada 2
+            objetoDatos.setInParameter(3);  //parametro de entrada 3
+            objetoDatos.setOutString();  //parametro de salida 1
+            objetoDatos.executeProcedure(); ///ejecucion
 
-        objetoDatos.close();
-        
+        } catch (SQLException ex) {
+            Logger.getLogger(ClArea.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            objetoDatos.close(); /////muy importante (libera la conexion y la entrega al pool)
+        }
+
         return objetoDatos.getString(4);
     }
 

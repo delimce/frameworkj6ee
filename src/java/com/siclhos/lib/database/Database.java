@@ -37,10 +37,6 @@ abstract class Database {
     /////////////////////////////////////prepared vars
     protected PreparedStatement pstmt;
     //////////////////////VARIABLES PARA LA CONEXION
-//    private String dbserver = "10.16.44.139";
-//    private String dbuser = "postgres";
-//    private String dbpass = "12345";
-//
     private String dbserver;
     private String dbuser;
     private String dbpass;
@@ -218,6 +214,7 @@ abstract class Database {
     }
 
     public void close() {
+
         try {
             this.dbc.close();
         } catch (SQLException ex) {
@@ -406,24 +403,19 @@ abstract class Database {
      *
      * @param query
      */
-    protected void prepareCall(String query) {
-        try {
-            this.cstmt = this.dbc.prepareCall(query);
-        } catch (SQLException ex) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    protected void prepareCall(String query) throws SQLException {
+
+        this.cstmt = this.dbc.prepareCall(query);
+
     }
 
     /**
      * metodo que ejecuta un objeto Call
      */
-    protected void executeCall() {
+    protected void executeCall() throws SQLException {
 
-        try {
-            this.cstmt.executeUpdate();
-        } catch (SQLException ex) {
-            Logger.getLogger(Database.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        this.cstmt.executeUpdate();
+
     }
 
     /**
@@ -702,6 +694,13 @@ abstract class Database {
         }
     }
 
+    /**
+     * metodo diseñado para los insert en tablas que generan un ID
+     * autoincremental puede usarse para los demas por se debe capturar la
+     * excepcion
+     *
+     * @throws SQLException
+     */
     public void tquery() throws SQLException {
 
         this.pstmt.executeUpdate();
@@ -711,6 +710,16 @@ abstract class Database {
             this.ultimoID = this.result.getLong(1);
         }
 
+    }
+
+    /**
+     * metodo diseñado para operaciones update y delete
+     *
+     * @throws SQLException
+     */
+    public void tquerySimple() throws SQLException {
+
+        this.pstmt.executeUpdate();
     }
 
     public void query() throws SQLException {
