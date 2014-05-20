@@ -189,7 +189,7 @@ abstract class Database {
      * metodo que realiza la conexion a la base de datos hasta la fecha la
      * conexion es con mysql,oracle y por defecto postgres
      */
-    public void connect() {
+    protected void connect() {
 
         this.dbc = null;
 
@@ -337,6 +337,9 @@ abstract class Database {
 
     /////////////////////////////////////////metodos para transacciones
 /////abrir transaccion
+    /**
+     * metodo que abre una transaccion y setea autocommit false
+     */
     public void begin_transaccion() {
         try {
             this.dbc.setAutoCommit(false);
@@ -347,6 +350,10 @@ abstract class Database {
     }
 
     ////pasa el parametro booleano confirmando o no la aplicar cambios o no
+    /**
+     * metodo que cierra una conexion y aplica commit o rollback segun parametro de confirm
+     * @param confirm 
+     */
     public void commit_transaccion(boolean confirm) {
 
         try {

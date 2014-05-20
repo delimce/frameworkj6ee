@@ -248,14 +248,14 @@ public class Baremo {
      */
     public ArrayList<Baremo> getListaBaremo(String pTipobaremo) {
 
-        objetoDatos = new BaremosDML();
-        this.objetoDatos.consultaBaremo(pTipobaremo);
-
         ArrayList vectorBaremos = new ArrayList<>();
 
-        if (this.objetoDatos.getNreg() > 0) {
+        try {
+            objetoDatos = new BaremosDML();
+            this.objetoDatos.consultaBaremo(pTipobaremo);
 
-            try {
+            if (this.objetoDatos.getNreg() > 0) {
+
                 while (objetoDatos.getResult().next()) {
 
                     Baremo b = new Baremo();
@@ -265,14 +265,14 @@ public class Baremo {
                     b.setOrdenBaremo((short) objetoDatos.getInteger("orden_baremo"));
                     vectorBaremos.add(b);
                 }
-            } catch (SQLException ex) {
-                Logger.getLogger(Baremo.class.getName()).log(Level.SEVERE, null, ex);
+
             }
 
+        } catch (SQLException ex) {
+            Logger.getLogger(Baremo.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return vectorBaremos;
-
     }
 
 }

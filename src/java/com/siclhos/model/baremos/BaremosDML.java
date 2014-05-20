@@ -7,8 +7,6 @@ package com.siclhos.model.baremos;
 
 import com.siclhos.lib.database.HelperDAO;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -21,48 +19,48 @@ public class BaremosDML extends HelperDAO {
     }
 
     /**
-     * constructor del objeto paasndo la tabla (entidad a la que hace referencia)
+     * constructor del objeto paasndo la tabla (entidad a la que hace
+     * referencia)
+     *
      * @param tabla
      */
-     public BaremosDML(String tabla) {
+    public BaremosDML(String tabla) {
         super(tabla);
     }
-    
+
+    /**
+     * trae todas las areas
+     */
+    public void consultaArea() throws SQLException {
+
+        prepareSQL("select * from cl_area ");
+        query();
+
+    }
+
     /**
      * Consulta de un area especifica dado su codigo
      * @param area
      */
-    public void consultaArea(String area) {
+    public void consultaArea(String area) throws SQLException {
 
-        try {
-            prepareSQL("select * from cl_area where area = ? ");
-            setString(1, area);
-            query();
-
-        } catch (SQLException ex) {
-            Logger.getLogger(BaremosDML.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        prepareSQL("select * from cl_area where area = ? ");
+        setString(1, area);
+        query();
 
     }
-    
-    
+
     /**
      * Consulta de un baremo dado su codigo
-     * @param tipoBaremo 
+     *
+     * @param tipoBaremo
      */
-     public void consultaBaremo(String tipoBaremo) {
+    public void consultaBaremo(String tipoBaremo) throws SQLException {
 
-        try {
-            prepareSQL("select * from cl_baremo_vn where tipo_baremo = ? ");
-            setString(1, tipoBaremo);
-            query();
-
-        } catch (SQLException ex) {
-            Logger.getLogger(BaremosDML.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        prepareSQL("select * from cl_baremo_vn where tipo_baremo = ? ");
+        setString(1, tipoBaremo);
+        query();
 
     }
-    
-    
 
 }

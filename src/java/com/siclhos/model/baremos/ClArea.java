@@ -6,6 +6,7 @@
 package com.siclhos.model.baremos;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.Basic;
@@ -86,6 +87,36 @@ public class ClArea {
         this.codigoContable = codigoContable;
     }
 
+    /**
+     * retorna un arreglo con los nombres de las areas
+     * @return
+     */
+    public ArrayList<String> listaAreas() {
+
+        ArrayList<String> areas = new ArrayList<>();
+        try {
+
+            objetoDatos = new BaremosDML(table);
+            objetoDatos.consultaArea();
+            while (objetoDatos.getResult().next()) {
+
+                areas.add(objetoDatos.getString("DESCRIPCION"));
+                
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ClArea.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            objetoDatos.close();
+        }
+
+        return areas;
+    }
+
+    
+    /**
+     * crea una nueva area
+     */
     public void insertarArea() {
 
         try {
@@ -102,6 +133,10 @@ public class ClArea {
 
     }
 
+    /**
+     * borra un area
+     * @param area 
+     */
     public void borrarArea(String area) {
 
         try {
@@ -118,6 +153,11 @@ public class ClArea {
 
     }
 
+    
+    /**
+     * modifica un area
+     * @param area 
+     */
     public void modificarArea(String area) {
 
         try {
@@ -137,8 +177,9 @@ public class ClArea {
 
     /**
      * ejemplo de ejecucion de 1 procedure
+     *
      * @param input
-     * @return 
+     * @return
      */
     public String execr_prueba_ejecuta_prc(String input) {
 
@@ -151,7 +192,7 @@ public class ClArea {
             objetoDatos.setInParameter(3);  //parametro de entrada 3
             objetoDatos.setOutString();  //parametro de salida 1
             objetoDatos.executeProcedure(); ///ejecucion
-            
+
             salida = objetoDatos.getString(4);
 
         } catch (SQLException ex) {
@@ -162,9 +203,9 @@ public class ClArea {
 
         return salida;
     }
-   
-     public String BuscaTexto(String input) {
-         String salida = "";
+
+    public String BuscaTexto(String input) {
+        String salida = "";
         try {
             objetoDatos = new BaremosDML();
             objetoDatos.setFunctionName("R_PRUEBA_BULK.busca_texto");
@@ -173,7 +214,7 @@ public class ClArea {
             objetoDatos.setInParameter("2");  //parametro de entrada 2
             objetoDatos.setInParameter(3);  //parametro de entrada 3            
             objetoDatos.executeFunction();
-            
+
             salida = objetoDatos.getString(1);
 
         } catch (SQLException ex) {
@@ -183,5 +224,5 @@ public class ClArea {
         }
 
         return salida;
-     } 
+    }
 }
