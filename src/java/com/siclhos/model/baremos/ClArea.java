@@ -7,6 +7,7 @@ package com.siclhos.model.baremos;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.Basic;
@@ -89,19 +90,24 @@ public class ClArea {
 
     /**
      * retorna un arreglo con los nombres de las areas
+     *
      * @return
      */
-    public ArrayList<String> listaAreas() {
+    public List<String> listaAreas() {
 
         ArrayList<String> areas = new ArrayList<>();
         try {
 
             objetoDatos = new BaremosDML(table);
             objetoDatos.consultaArea();
-            while (objetoDatos.getResult().next()) {
+            if (objetoDatos.getNreg() > 0) {
 
-                areas.add(objetoDatos.getString("DESCRIPCION"));
-                
+                while (objetoDatos.getResult().next()) {
+
+                    areas.add(objetoDatos.getString("DESCRIPCION"));
+
+                }
+
             }
 
         } catch (SQLException ex) {
@@ -113,7 +119,6 @@ public class ClArea {
         return areas;
     }
 
-    
     /**
      * crea una nueva area
      */
@@ -135,7 +140,8 @@ public class ClArea {
 
     /**
      * borra un area
-     * @param area 
+     *
+     * @param area
      */
     public void borrarArea(String area) {
 
@@ -153,10 +159,10 @@ public class ClArea {
 
     }
 
-    
     /**
      * modifica un area
-     * @param area 
+     *
+     * @param area
      */
     public void modificarArea(String area) {
 
