@@ -42,14 +42,24 @@ public class BaremosDML extends HelperDAO {
      * Consulta de un area especifica dado su codigo
      * @param area
      */
-    public void consultaArea(String area) throws SQLException {
+    public void consultaArea(ClArea area) throws SQLException {
 
         prepareSQL("select * from cl_area where area = ? ");
-        setString(1, area);
+        setString(1, area.getArea());
         query();
 
     }
 
+    /**
+     * Consulta todos los baremos
+     */
+    public void consultaBaremo() throws SQLException {
+
+        prepareSQL("select * from cl_baremo_vn");     
+        query();
+
+    }
+    
     /**
      * Consulta de un baremo dado su codigo
      *

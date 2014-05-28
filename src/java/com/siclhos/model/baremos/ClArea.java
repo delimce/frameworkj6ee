@@ -25,10 +25,12 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "CL_AREA")
 public class ClArea {
+    //@OneToMany(mappedBy = "area")
+    //private Collection<ClTipoBare> clTipoBareCollection;
 
     private static final long serialVersionUID = 1L;
     @Id
-    @Basic(optional = false)
+    //@Basic(optional = false)
     @NotNull
     @Size(min = 1, max = 2)
     @Column(name = "AREA")
@@ -48,12 +50,18 @@ public class ClArea {
     private String table = (String) this.getClass().getAnnotation(Table.class).name(); ///tabla en bd
 
     ///constructor por defecto 
-    public ClArea() {
-
+    public ClArea() {        
     }
-
+    
     public ClArea(String area) {
         this.area = area;
+    }
+    
+    public ClArea(String area,String descripcion,String tipoAgrupa,String codigoContable) {
+        this.area = area;
+        this.descripcion = descripcion;
+        this.tipoAgrupa = tipoAgrupa;
+        this.codigoContable = codigoContable;
     }
 
     public String getArea() {
@@ -102,10 +110,8 @@ public class ClArea {
             objetoDatos.consultaArea();
             if (objetoDatos.getNreg() > 0) {
 
-                while (objetoDatos.getResult().next()) {
-
+                while (objetoDatos.getResult().next()) {                                                            
                     areas.add(objetoDatos.getString("DESCRIPCION"));
-
                 }
 
             }
@@ -117,8 +123,30 @@ public class ClArea {
         }
 
         return areas;
-    }
+    }    
+    
+     public List<String> listaArea(ClArea area) {
 
+        ArrayList<String> areas = new ArrayList<>();               
+        try {
+
+            objetoDatos = new BaremosDML(table);
+            objetoDatos.consultaArea(area);
+            if (objetoDatos.getNreg() > 0) {
+
+                while (objetoDatos.getResult().next()) {                    
+                    areas.add(objetoDatos.getString("DESCRIPCION"));
+                }
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ClArea.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            objetoDatos.close();
+        }
+
+        return areas;
+    }
     /**
      * crea una nueva area
      */
@@ -231,4 +259,13 @@ public class ClArea {
 
         return salida;
     }
+    /*
+    @XmlTransient
+    public Collection<ClTipoBare> getClTipoBareCollection() {
+        return clTipoBareCollection;
+    }
+
+    public void setClTipoBareCollection(Collection<ClTipoBare> clTipoBareCollection) {
+        this.clTipoBareCollection = clTipoBareCollection;
+    }*/
 }
