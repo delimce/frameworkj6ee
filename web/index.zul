@@ -1,12 +1,22 @@
-    <window title="titulo"  width="600px" height="620px" border="normal"
+    <window title="SICLHOS"  width="600px" height="620px" border="normal"
             apply="com.siclhos.controller.ExampleController">
+    <separator />    
     Bienvenido a SICLHOS 
-    <div>
+    <!--<div>
         Input: <textbox id="input" />
     </div>
     <div>
         Output: <label id="output" />
     </div>
     <button id="ok" label="Submit" />
-    <button id="cancel" label="Clear" />
+    <button id="cancel" label="Clear" />-->
+    <separator />
+    <menubar>
+        <menuitem label="Home" href="/index.zul"/>
+        <menu label="Baremos">
+            <menupopup>
+                <menuitem label="Manejo de Baremos" href="/ClBaremos.zul"/>                         
+            </menupopup>
+        </menu>    
+    </menubar>
 </window>
