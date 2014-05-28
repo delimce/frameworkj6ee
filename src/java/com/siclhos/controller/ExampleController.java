@@ -18,7 +18,8 @@ public class ExampleController extends SelectorComposer<Component> {
     public void submit() {
 
         ClArea area = new ClArea();
-        output.setValue(area.execr_prueba_ejecuta_prc(input.getValue()));
+        //output.setValue(area.execr_prueba_ejecuta_prc(input.getValue()));
+        output.setValue(area.BuscaTexto(input.getValue()));
 
         ////eliminar
         // area.borrarArea("PU");
